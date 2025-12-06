@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "910737816468",
+    "project_id": "medtrack-app-5f07d",
+    "storage_bucket": "medtrack-app-5f07d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:910737816468:android:cada0f13459077c9332d81",
+        "android_client_info": {
+          "package_name": "com.example.frontend"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "910737816468-hhvt1phm7torv63b9f03f4ii46qoopds.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8x70QAIeUKeTBi3tBcD-9g5fMNvhtd98"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "910737816468-hhvt1phm7torv63b9f03f4ii46qoopds.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "910737816468-rki47iq1e6raj9tcnof0u8hiep6h4lir.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.frontend"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
