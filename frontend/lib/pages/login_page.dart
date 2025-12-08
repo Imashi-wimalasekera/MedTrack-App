@@ -4,9 +4,11 @@ import 'package:flutter/foundation.dart'
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../firebase_options.dart';
 import 'signup_page.dart';
+import 'forgot_password_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -23,8 +25,8 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
 
   GoogleSignIn _googleSignInClient() {
-    // Use platform-specific clientId for iOS/macOS; default for Android/web.
-    if (kIsWeb) return GoogleSignIn();
+    // Use platform-specific clientId for iOS/macOS only
+    // Web and Android will use default Firebase configuration
     if (defaultTargetPlatform == TargetPlatform.iOS ||
         defaultTargetPlatform == TargetPlatform.macOS) {
       return GoogleSignIn(
@@ -167,24 +169,31 @@ class _LoginPageState extends State<LoginPage> {
     try {
       setState(() => _isLoading = true);
 
-      final GoogleSignInAccount? googleUser = await _googleSignInClient()
-          .signIn();
+      // Use Firebase Auth popup for web, GoogleSignIn for mobile
+      if (kIsWeb) {
+        final GoogleAuthProvider googleProvider = GoogleAuthProvider();
+        googleProvider.setCustomParameters({'prompt': 'select_account'});
+        await FirebaseAuth.instance.signInWithPopup(googleProvider);
+      } else {
+        final GoogleSignInAccount? googleUser = await _googleSignInClient()
+            .signIn();
 
-      if (googleUser == null) {
-        // User canceled the sign-in
-        if (mounted) setState(() => _isLoading = false);
-        return;
+        if (googleUser == null) {
+          // User canceled the sign-in
+          if (mounted) setState(() => _isLoading = false);
+          return;
+        }
+
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        await FirebaseAuth.instance.signInWithCredential(credential);
       }
-
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      await FirebaseAuth.instance.signInWithCredential(credential);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -213,44 +222,10 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleForgotPassword() async {
-    final email = _emailController.text.trim();
-
-    if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter your email address first'),
-          backgroundColor: Colors.orange,
-        ),
-      );
-      return;
-    }
-
-    try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Password reset email sent! Check your inbox.'),
-            backgroundColor: Color(0xFF4DB8AC),
-          ),
-        );
-      }
-    } on FirebaseAuthException catch (e) {
-      String errorMessage = 'Failed to send reset email';
-
-      if (e.code == 'user-not-found') {
-        errorMessage = 'No user found with this email';
-      } else if (e.code == 'invalid-email') {
-        errorMessage = 'Invalid email address';
-      }
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
-        );
-      }
-    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+    );
   }
 
   @override
@@ -432,9 +407,12 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      'Forgot your Password? ',
-                      style: TextStyle(fontSize: 14, color: Colors.black87),
+                    Flexible(
+                      child: Text(
+                        'Forgot your Password? ',
+                        style: TextStyle(fontSize: 14, color: Colors.black87),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     GestureDetector(
                       onTap: _handleForgotPassword,
@@ -503,12 +481,10 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    icon: Image.asset(
-                      'assets/icons/google.png',
-                      height: 24,
-                      width: 24,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const Icon(Icons.g_mobiledata, size: 24),
+                    icon: SvgPicture.asset(
+                      'assets/icons/google.svg',
+                      height: 20,
+                      width: 20,
                     ),
                     label: const Text(
                       'Continue with Google',

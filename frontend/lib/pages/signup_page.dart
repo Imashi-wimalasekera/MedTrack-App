@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart'
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../firebase_options.dart';
 
@@ -25,7 +26,8 @@ class _SignupPageState extends State<SignupPage> {
   bool _isLoading = false;
 
   GoogleSignIn _googleSignInClient() {
-    if (kIsWeb) return GoogleSignIn();
+    // Use platform-specific clientId for iOS/macOS only
+    // Web and Android will use default Firebase configuration
     if (defaultTargetPlatform == TargetPlatform.iOS ||
         defaultTargetPlatform == TargetPlatform.macOS) {
       return GoogleSignIn(
@@ -167,23 +169,30 @@ class _SignupPageState extends State<SignupPage> {
     try {
       setState(() => _isLoading = true);
 
-      final GoogleSignInAccount? googleUser = await _googleSignInClient()
-          .signIn();
+      // Use Firebase Auth popup for web, GoogleSignIn for mobile
+      if (kIsWeb) {
+        final GoogleAuthProvider googleProvider = GoogleAuthProvider();
+        googleProvider.setCustomParameters({'prompt': 'select_account'});
+        await FirebaseAuth.instance.signInWithPopup(googleProvider);
+      } else {
+        final GoogleSignInAccount? googleUser = await _googleSignInClient()
+            .signIn();
 
-      if (googleUser == null) {
-        if (mounted) setState(() => _isLoading = false);
-        return;
+        if (googleUser == null) {
+          if (mounted) setState(() => _isLoading = false);
+          return;
+        }
+
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        await FirebaseAuth.instance.signInWithCredential(credential);
       }
-
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      await FirebaseAuth.instance.signInWithCredential(credential);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -542,12 +551,10 @@ class _SignupPageState extends State<SignupPage> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    icon: Image.asset(
-                      'assets/icons/google.png',
-                      height: 24,
-                      width: 24,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const Icon(Icons.g_mobiledata, size: 24),
+                    icon: SvgPicture.asset(
+                      'assets/icons/google.svg',
+                      height: 20,
+                      width: 20,
                     ),
                     label: const Text(
                       'Continue with Google',
