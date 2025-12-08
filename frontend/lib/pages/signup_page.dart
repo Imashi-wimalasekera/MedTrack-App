@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, TargetPlatform, kIsWeb;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -61,6 +62,20 @@ class _SignupPageState extends State<SignupPage> {
 
         // Update display name
         await credential.user?.updateDisplayName(_nameController.text.trim());
+
+        // Save user data to Firestore with role
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(credential.user?.uid)
+            .set({
+              'email': _emailController.text.trim(),
+              'displayName': _nameController.text.trim(),
+              'role': _selectedRole ?? 'User',
+              'createdAt': DateTime.now(),
+              'linkedCaregivers': [],
+              'adherencePercentage': 0,
+              'lastMedicationTime': 'N/A',
+            });
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -356,7 +371,7 @@ class _SignupPageState extends State<SignupPage> {
                 ),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
-                  value: _selectedRole,
+                  initialValue: _selectedRole,
                   items: _roles
                       .map(
                         (role) => DropdownMenuItem<String>(

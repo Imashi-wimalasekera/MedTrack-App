@@ -1,0 +1,44 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Allow authenticated users to read their own user document
+    match /Users/{userId} {
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && request.auth.uid == userId;
+      
+      // Caregivers can read patient data if linked
+      allow read: if request.auth != null && 
+                     exists(/databases/$(database)/documents/Users/$(request.auth.uid)) &&
+                     request.auth.uid in get(/databases/$(database)/documents/Users/$(resource.id)).data.linkedCaregivers;
+      
+      // Subcollections
+      match /Medications/{document=**} {
+        allow read, write: if request.auth.uid == userId;
+        allow read: if request.auth != null && request.auth.uid in get(/databases/$(database)/documents/Users/$(userId)).data.linkedCaregivers;
+      }
+      
+      match /MedicationLogs/{document=**} {
+        allow read, write: if request.auth.uid == userId;
+        allow read: if request.auth != null && request.auth.uid in get(/databases/$(database)/documents/Users/$(userId)).data.linkedCaregivers;
+      }
+      
+      match /CaregiverNotes/{document=**} {
+        allow create, read, write: if request.auth != null;
+      }
+    }
+    
+    // Caregivers collection
+    match /Caregivers/{caregiverId} {
+      allow create: if request.auth != null && request.auth.uid == caregiverId;
+      allow read, write: if request.auth != null && request.auth.uid == caregiverId;
+    }
+    
+    // Notifications collection
+    match /Notifications/{notificationId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null && request.auth.uid == resource.data.caregiverId;
+    }
+  }
+}
