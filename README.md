@@ -86,8 +86,6 @@ MedTrack-App/
 │   ├── ios/                             # iOS-specific files
 │   ├── web/                             # Web-specific files
 │   └── pubspec.yaml                     # Dependencies
-├── CURRENT_STATUS.md                    # Development status
-├── FIREBASE_SETUP.md                    # Firebase setup guide
 └── README.md                            # This file
 ```
 
@@ -161,74 +159,9 @@ Ensure you've set up Firebase Authentication with the following providers:
 
 ---
 
-## 📸 Screenshots
-
-*Coming soon - Screenshots of login, medication list, reminders, and caregiver features*
-
----
-
-## 🗺️ Roadmap
-
-- [x] User authentication (Email, Google, Apple)
-- [x] Password recovery
-- [ ] Medication management (Add/Edit/Delete)
-- [ ] Reminder scheduling with notifications
-- [ ] Dose tracking and history
-- [ ] Refill alerts
-- [ ] Caregiver mode
-- [ ] Calendar view
-- [ ] Dark mode support
-- [ ] Multi-language support
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 👥 Authors
-
-- **Imashi Wimalasekera** - [@Imashi-wimalasekera](https://github.com/Imashi-wimalasekera)
-
----
-
-## 🙏 Acknowledgments
-
-- Flutter team for the amazing framework
-- Firebase for backend services
-- Material Design for UI guidelines
-- All contributors and testers
-
----
-
-## 📞 Support
-
-For issues, questions, or suggestions:
-- Open an issue on GitHub
-- Contact: [Your Email]
-
----
-
-## 🔗 Links
-
-- [Flutter Documentation](https://docs.flutter.dev/)
-- [Firebase Documentation](https://firebase.google.com/docs)
-- [Project Status](CURRENT_STATUS.md)
-- [Firebase Setup Guide](FIREBASE_SETUP.md)
 
 ---
 
