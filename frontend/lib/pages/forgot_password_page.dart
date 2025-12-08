@@ -11,18 +11,12 @@ class ForgotPasswordPage extends StatefulWidget {
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  final _newPasswordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
   bool _emailVerified = false;
-  bool _isNewPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
 
   @override
   void dispose() {
     _emailController.dispose();
-    _newPasswordController.dispose();
-    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -33,13 +27,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       try {
         final email = _emailController.text.trim();
 
-        // Debug: Print email being used
-        print('Attempting to send password reset email to: $email');
-
         // Send password reset email
         await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-
-        print('Password reset email sent successfully');
 
         if (mounted) {
           setState(() {
@@ -58,8 +47,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           );
         }
       } on FirebaseAuthException catch (e) {
-        print('FirebaseAuthException: ${e.code} - ${e.message}');
-
         String errorMessage = 'Failed to send reset email';
 
         switch (e.code) {
@@ -92,8 +79,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           );
         }
       } catch (e) {
-        print('General error: ${e.toString()}');
-
         if (mounted) {
           setState(() => _isLoading = false);
           ScaffoldMessenger.of(context).showSnackBar(
@@ -101,53 +86,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               content: Text('Error: ${e.toString()}'),
               backgroundColor: Colors.red,
               duration: const Duration(seconds: 4),
-            ),
-          );
-        }
-      }
-    }
-  }
-
-  Future<void> _resetPassword() async {
-    if (_formKey.currentState!.validate()) {
-      if (_newPasswordController.text != _confirmPasswordController.text) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Passwords do not match'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-
-      setState(() => _isLoading = true);
-
-      try {
-        // Note: Firebase handles password reset via email link
-        // Users will set their new password on the Firebase reset page
-        // This screen is just for UI/UX demonstration
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Please check your email and click the reset link to complete the process.',
-              ),
-              backgroundColor: Color(0xFF4DB8AC),
-              duration: Duration(seconds: 4),
-            ),
-          );
-
-          // Navigate back to login
-          Navigator.of(context).popUntil((route) => route.isFirst);
-        }
-      } catch (e) {
-        if (mounted) {
-          setState(() => _isLoading = false);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error: ${e.toString()}'),
-              backgroundColor: Colors.red,
             ),
           );
         }
@@ -287,10 +225,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF4DB8AC).withOpacity(0.1),
+                        color: const Color(0xFF4DB8AC).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: const Color(0xFF4DB8AC).withOpacity(0.3),
+                          color: const Color(0xFF4DB8AC).withValues(alpha: 0.3),
                         ),
                       ),
                       child: Column(

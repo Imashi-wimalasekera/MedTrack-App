@@ -21,6 +21,8 @@ class _SignupPageState extends State<SignupPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final List<String> _roles = ['Caregiver', 'User'];
+  String? _selectedRole;
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   bool _isLoading = false;
@@ -251,7 +253,7 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 24),
 
                 // Name Field
                 const Text(
@@ -337,6 +339,65 @@ class _SignupPageState extends State<SignupPage> {
                     }
                     if (!value.contains('@')) {
                       return 'Please enter a valid email';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 20),
+
+                // Role Field
+                const Text(
+                  'Role',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                DropdownButtonFormField<String>(
+                  value: _selectedRole,
+                  items: _roles
+                      .map(
+                        (role) => DropdownMenuItem<String>(
+                          value: role,
+                          child: Text(
+                            role,
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedRole = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    hintText: 'Select your role',
+                    hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+                    filled: true,
+                    fillColor: Colors.grey[50],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: Colors.grey[300]!),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: Colors.grey[300]!),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Color(0xFF4DB8AC)),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please select your role';
                     }
                     return null;
                   },
