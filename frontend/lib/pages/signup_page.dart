@@ -84,8 +84,8 @@ class _SignupPageState extends State<SignupPage> {
               backgroundColor: Color(0xFF4DB8AC),
             ),
           );
-          // TODO: Navigate to home page
-          // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage()));
+          // Pop the signup page so RoleBasedNavigator can navigate based on role
+          Navigator.pop(context);
         }
       } on FirebaseAuthException catch (e) {
         String errorMessage = 'An error occurred';
@@ -151,8 +151,8 @@ class _SignupPageState extends State<SignupPage> {
             backgroundColor: Color(0xFF4DB8AC),
           ),
         );
-        // TODO: Navigate to home page
-        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage()));
+        // Pop the signup page so RoleBasedNavigator can navigate based on role
+        Navigator.pop(context);
       }
     } on SignInWithAppleAuthorizationException catch (e) {
       if (e.code == AuthorizationErrorCode.canceled) {
@@ -218,8 +218,8 @@ class _SignupPageState extends State<SignupPage> {
             backgroundColor: Color(0xFF4DB8AC),
           ),
         );
-        // TODO: Navigate to home page
-        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage()));
+        // Pop the signup page so RoleBasedNavigator can navigate based on role
+        Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
