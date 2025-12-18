@@ -15,8 +15,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
   bool _emailVerified = false;
-  bool _isNewPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
+  final bool _isNewPasswordVisible = false;
+  final bool _isConfirmPasswordVisible = false;
 
   @override
   void dispose() {
